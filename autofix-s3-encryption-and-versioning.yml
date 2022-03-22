@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ""
+Resources:
+  ConfigRule1:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "s3-bucket-server-side-encryption-enabled"
+      Scope:
+        ComplianceResourceTypes:
+          - "AWS::S3::Bucket"
+      Description: "Auto remediation configuration to configure S3 Bucket Encryption if an S3 bucket created without server side encryption. Detection uses a managed AWS Config Rule and remediation is with SSM Automation."
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED"
+  RemediationForConfigRule1:
+    Type: "AWS::Config::RemediationConfiguration"
+    Properties:
+      Automatic: true
+      ConfigRuleName:
+        Ref: "ConfigRule1"
+      MaximumAutomaticAttempts: 5
+      RetryAttemptSeconds: 60
+      TargetId: "AWS-EnableS3BucketEncryption"
+      TargetType: "SSM_DOCUMENT"
+      TargetVersion: "1"
+      Parameters:
+        AutomationAssumeRole:
+          StaticValue:
+            Values:
+              - Fn::GetAtt:
+                  - "AutoRemediationIamRole"
+                  - "Arn"
+        BucketName:
+          ResourceValue:
+            Value: "RESOURCE_ID"
+  AutoRemediationIamRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+                - "events.amazonaws.com"
+                - "ssm.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonSSMAutomationRole"
+      Policies:
+        - PolicyName: "AllowPutEncryptionConfiguration"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "AllowPutEncryptionConfiguration"
+                Effect: "Allow"
+                Action: "s3:PutEncryptionConfiguration"
+                Resource: "arn:aws:s3:::*"
+        - PolicyName: "AllowPutBucketVersioning"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "AllowPutBucketVersioning"
+                Effect: "Allow"
+                Action: "s3:PutBucketVersioning"
+                Resource: "arn:aws:s3:::*"
+  AutomationPassRolePolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "passAutomationRole"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "iam:PassRole"
+            Resource:
+              Fn::GetAtt:
+                - "AutoRemediationIamRole"
+                - "Arn"
+      Roles:
+        - Ref: "AutoRemediationIamRole"
+  ConfigRule2:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      ConfigRuleName: "s3-bucket-versioning-enabled"
+      Scope:
+        ComplianceResourceTypes:
+          - "AWS::S3::Bucket"
+      Description: "Auto remediation configuration to configure S3 Bucket Versioning if versioning is not enabled at the time of bucket creation. Detection uses a managed AWS Config Rule and remediation is with SSM Automation."
+      Source:
+        Owner: "AWS"
+        SourceIdentifier: "S3_BUCKET_VERSIONING_ENABLED"
+  RemediationForConfigRule2:
+    Type: "AWS::Config::RemediationConfiguration"
+    Properties:
+      Automatic: true
+      ConfigRuleName:
+        Ref: "ConfigRule2"
+      MaximumAutomaticAttempts: 5
+      RetryAttemptSeconds: 60
+      TargetId: "AWS-ConfigureS3BucketVersioning"
+      TargetType: "SSM_DOCUMENT"
+      TargetVersion: "1"
+      Parameters:
+        AutomationAssumeRole:
+          StaticValue:
+            Values:
+              - Fn::GetAtt:
+                  - "AutoRemediationIamRole"
+                  - "Arn"
+        BucketName:
+          ResourceValue:
+            Value: "RESOURCE_ID"
+Parameters: {}
+Metadata: {}
+Conditions: {}
