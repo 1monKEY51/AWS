@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ""
+Resources:
+  WafWebAclAssociation:
+    Type: "AWS::WAFv2::WebACLAssociation"
+    Properties:
+      ResourceArn: "Resource Arn"
+      WebACLArn:
+        Fn::GetAtt:
+          - "WafWebAcl"
+          - "Arn"
+  WafWebAcl:
+    Type: "AWS::WAFv2::WebACL"
+    Properties:
+      Name: "WAF_Common_Protections"
+      Scope: "REGIONAL"
+      DefaultAction:
+        Allow: {}
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: "WAF_Common_Protections"
+        SampledRequestsEnabled: true
+      Rules:
+        - Name: "AWSManagedRulesCommonRule"
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: "AWS"
+              Name: "AWSManagedRulesCommonRuleSet"
+          Priority: 0
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "AWSManagedRulesCommonRule"
+            SampledRequestsEnabled: true
+        - Name: "AWSManagedRulesKnownBadInputsRule"
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: "AWS"
+              Name: "AWSManagedRulesKnownBadInputsRuleSet"
+          Priority: 1
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "AWSManagedRulesKnownBadInputsRule"
+            SampledRequestsEnabled: true
+        - Name: "AWSManagedRulesAmazonIpReputation"
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: "AWS"
+              Name: "AWSManagedRulesAmazonIpReputationList"
+          Priority: 2
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "AWSManagedRulesAmazonIpReputation"
+            SampledRequestsEnabled: true
+      Description: "Simple ACL for common WAF protection"
+Parameters: {}
+Metadata: {}
+Conditions: {}
