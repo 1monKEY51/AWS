@@ -1,4 +1,4 @@
-# S3 Security Controls:
+# AWS S3 Security Controls:
 ### S3SecurityControl.tf & S3SecurityControl.yml
 
 Configuration for creating an S3 bucket with security options such as S3 block public access configuration, encryption, logging, and versioning.
@@ -14,13 +14,13 @@ Public Access Settings:
 Predefined ACL = PublicRead
 tf only: region setting as af-south-1
 
-# S3 Bucket SSL Policies
+# AWS S3 Bucket SSL Policies
 ### S3_SSL_Policy.tf & S3_SSL_Policy.yml
 
 An S3 Bucket policy that prevents access to the S3 bucket that is not encrypted in transit (uses HTTP rather than HTTPS).
 tf only: region setting as af-south-1
 
-# WAF
+# AWS Web Application Firewall
 ### WAF.tf & WAF.yml
 
 Configuration to create WAF Web ACLs with AWS Managed Rules to protect internet-facing applications.
@@ -38,7 +38,7 @@ A configuration package that enables compliance monitoring for a subset of the P
 ~ AWS Config is required in order to enable Compliance Standards in the Security Hub (CIS AWS Foundations, and PCI DSS).
 ~ Configure a CloudWatch Event Rule to match on Security Hub findings and send notifications to an SNS topic.
 
-# Amazon GuardDuty
+# AWS GuardDuty
 ### AWS_GuardDuty.tf & AWS_GuardDuty.yml
 
 Protects your AWS accounts and workloads by continuously monitoring for malicious activity and unauthorized behavior.
