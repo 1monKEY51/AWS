@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ""
+Resources:
+  WafWebAcl:
+    Type: "AWS::WAFv2::WebACL"
+    Properties:
+      Name: "MyWebACL"
+      Scope: "REGIONAL"
+      DefaultAction:
+        Allow: {}
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: "MyWebACL"
+        SampledRequestsEnabled: true
+      Rules:
+        - Name: "AWSManagedRulesKnownBadInputsRuleSet"
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: "AWS"
+              Name: "AWSManagedRulesKnownBadInputsRuleSet"
+          Priority: 2
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "AWSManagedRulesKnownBadInputsRuleSet"
+            SampledRequestsEnabled: true
+        - Name: "AWSManagedRulesCommonRuleSet"
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: "AWS"
+              Name: "AWSManagedRulesCommonRuleSet"
+          Priority: 1
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "AWSManagedRulesCommonRuleSet"
+            SampledRequestsEnabled: true
+        - Name: "AWSManagedRulesAmazonIpReputationList"
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: "AWS"
+              Name: "AWSManagedRulesAmazonIpReputationList"
+          Priority: 4
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "AWSManagedRulesAmazonIpReputationList"
+            SampledRequestsEnabled: true
+        - Name: "AWSManagedRulesAnonymousIpList"
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: "AWS"
+              Name: "AWSManagedRulesAnonymousIpList"
+          Priority: 5
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "AWSManagedRulesAnonymousIpList"
+            SampledRequestsEnabled: true
+      Description: "AWSManagedRulesAnonymousIpList, AWSManagedRulesAmazonIpReputationList, AWSManagedRulesCommonRuleSet and AWSManagedRulesKnownBadInputsRuleSet ."
+Parameters: {}
+Metadata: {}
+Conditions: {}

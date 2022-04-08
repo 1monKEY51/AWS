@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ""
+Resources:
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "mybucket"
+  BucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket:
+        Ref: "S3Bucket"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Principal:
+              AWS: "*"
+            Action:
+              - "s3:*"
+            Resource:
+              - "arn:aws:s3:::mybucket/*"
+              - "arn:aws:s3:::mybucket"
+            Effect: "Deny"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+Parameters: {}
+Metadata: {}
+Conditions: {}
